@@ -61,7 +61,7 @@ def main(args):
             batch_size=args.eval_pars.num_samples,
             num_gpus=num_gpus,
             fn_constructor_kwargs={"num_datapoints": num_datapoints, "tokenizer": tokenizer, "vocab_size": len(tokenizer), "model_name_or_path": args.model_pars.model_dir, "max_tokens": args.eval_pars.max_tokens,
-                                    "n": args.eval_pars.num_samples, "temperature": args.eval_pars.temperature, "logging_interval": args.eval_pars.logging_interval,
+                                    "n": args.eval_pars.num_samples, "temperature": args.eval_pars.temperature, 
                                     "tensor_parallel_size": args.eval_pars.tensor_parallel_size, "pipeline_parallel_size": args.eval_pars.pipeline_parallel_size,
                                     "data_parallel_size": args.eval_pars.data_parallel_size}
         )
