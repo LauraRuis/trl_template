@@ -79,7 +79,8 @@ def main(args):
         tokenizer = AutoTokenizer.from_pretrained(args.model_pars.model_dir)
     train_dataset, eval_dataset = get_datasets(args, tokenizer)
 
-    effective_batch_size = args.finetuning_pars.per_device_train_batch_size * max(1, args.finetuning_pars.gradient_accumulation_steps) * torch.cuda.device_count()
+    world_size = int(os.environ.get("WORLD_SIZE", 1))
+    effective_batch_size = args.finetuning_pars.per_device_train_batch_size * max(1, args.finetuning_pars.gradient_accumulation_steps) * world_size
     steps_per_epoch = len(train_dataset) // effective_batch_size
     if len(train_dataset) < effective_batch_size:
         steps_per_epoch = 1
