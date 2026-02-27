@@ -13,15 +13,14 @@ from src.dataset import get_dataset
 
 
 class LLMInference:
-    def __init__(self, num_datapoints, vocab_size: int, tokenizer, model_name_or_path="meta-llama/Llama-3.1-8B-Instruct", 
+    def __init__(self, num_datapoints, tokenizer, model_name_or_path="meta-llama/Llama-3.1-8B-Instruct", 
                  max_tokens=1024, n=16, temperature=0.8, lora_path=None, tensor_parallel_size=1, pipeline_parallel_size=1, data_parallel_size=1):
         self.llm = LLM(model=model_name_or_path, enable_lora=lora_path != None, 
-                       tensor_parallel_size=tensor_parallel_size, pipeline_parallel_size=pipeline_parallel_size, data_parallel_size=data_parallel_size,
-                       max_logprobs=vocab_size)
+                       tensor_parallel_size=tensor_parallel_size, pipeline_parallel_size=pipeline_parallel_size, data_parallel_size=data_parallel_size)
         self.llm.set_tokenizer(tokenizer)
         self.tokenizer = tokenizer
         self.lora_path = lora_path
-        self.sampling_params = SamplingParams(max_tokens=max_tokens, n=n, temperature=temperature, logprobs=vocab_size)
+        self.sampling_params = SamplingParams(max_tokens=max_tokens, n=n, temperature=temperature)
         self.num_datapoints = num_datapoints
 
     def __call__(self, batch: Dict[str, torch.LongTensor]) -> Dict[str, list]:
@@ -60,7 +59,7 @@ def main(args):
             concurrency=args.eval_pars.num_workers,
             batch_size=args.eval_pars.num_samples,
             num_gpus=num_gpus,
-            fn_constructor_kwargs={"num_datapoints": num_datapoints, "tokenizer": tokenizer, "vocab_size": len(tokenizer), "model_name_or_path": args.model_pars.model_dir, "max_tokens": args.eval_pars.max_tokens,
+            fn_constructor_kwargs={"num_datapoints": num_datapoints, "tokenizer": tokenizer, "model_name_or_path": args.model_pars.model_dir, "max_tokens": args.eval_pars.max_tokens,
                                     "n": args.eval_pars.num_samples, "temperature": args.eval_pars.temperature, 
                                     "tensor_parallel_size": args.eval_pars.tensor_parallel_size, "pipeline_parallel_size": args.eval_pars.pipeline_parallel_size,
                                     "data_parallel_size": args.eval_pars.data_parallel_size}
